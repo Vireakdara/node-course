@@ -1,3 +1,5 @@
+const logger = require("./logger")
+const auth = require("./auth")
 const Joi = require('joi');
 const express = require('express');
 const app = express();
@@ -7,15 +9,9 @@ app.use(express.json())
 /* Middleware Function is a function that takes a request object and either terminates 
  the request/response cycle or passes control to antother middleware function.*/
 
-app.use(function(req, res, next){
-    console.log("Logging...")
-    next();
-})
+app.use(logger);
 
-app.use(function(req, res, next){
-    console.log("Autheicating...")
-    next();
-})
+app.use(auth);
 
 const courses = [
     {

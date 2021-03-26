@@ -2,9 +2,24 @@ const logger = require("./logger")
 const auth = require("./auth")
 const Joi = require('joi');
 const express = require('express');
+const helmet = require("helmet")
+const morgan = require("morgan")
 const app = express();
+const config = require("config")
 
-app.use(express.json())
+
+app.use(express.json()) // parse body object // Example : req.body
+
+app.use(express.urlencoded({extended: true})) // key=value&key=value
+
+app.use(express.static('public')); // static content
+
+app.use(helmet()) // Helps secure your apps by setting various HTTP headers.
+
+if (app.get('env') === "development") {
+    app.use(morgan("tiny")) // HTTP request logger.
+    console.log("Morgan is enable...")
+}
 
 /* Middleware Function is a function that takes a request object and either terminates 
  the request/response cycle or passes control to antother middleware function.*/
@@ -12,6 +27,11 @@ app.use(express.json())
 app.use(logger);
 
 app.use(auth);
+
+// Configuration
+console.log("Application Name:" + config.get('name'))
+console.log("Mail Server :" + config.get('mail.host'))
+
 
 const courses = [
     {
@@ -104,9 +124,7 @@ function validateCourse(course) {
     const schema = {
         name: Joi.string().min(3).required()
     }
-
     return Joi.validate(course, schema)
-
 }
 
 
